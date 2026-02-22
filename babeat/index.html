@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Babeat - 스마트 이유식 관리 앱</title>
+  <meta name="description" content="바비트(Babeat)는 아기 이유식 큐브 재고 관리부터 주간 식단 계획까지, 이유식의 모든 것을 한 곳에서 관리하는 스마트 앱입니다.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --primary: #F43F5E;
+      --primary-light: #FFF1F2;
+      --primary-dark: #E11D48;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans KR', sans-serif;
+      color: var(--gray-900);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gray-200);
+      z-index: 100;
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--gray-900);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--gray-700);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: white;
+      color: var(--gray-700);
+      border: 1.5px solid var(--gray-200);
+    }
+    .btn-outline:hover {
+      border-color: var(--gray-400);
+      transform: translateY(-1px);
+    }
+    .btn svg { width: 20px; height: 20px; }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 140px 24px 60px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--primary-light) 0%, #FFFFFF 100%);
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 100px;
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .hero h1 span { color: var(--primary); }
+    .hero > p {
+      font-size: 18px;
+      color: var(--gray-500);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    /* Hero Screenshots */
+    .hero-screenshots {
+      margin-top: 60px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 0 20px 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .hero-screenshots img {
+      width: 220px;
+      height: auto;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+    .hero-screenshots img:hover {
+      transform: translateY(-8px);
+    }
+    .hero-screenshots img:nth-child(2),
+    .hero-screenshots img:nth-child(4) {
+      margin-top: 32px;
+    }
+
+    /* Section common */
+    section { padding: 80px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .section-desc {
+      font-size: 17px;
+      color: var(--gray-500);
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    /* Showcase: image + text side by side */
+    .showcase {
+      padding: 60px 24px;
+    }
+    .showcase:nth-child(even) {
+      background: var(--gray-50);
+    }
+    .showcase-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+    .showcase-inner.reverse {
+      flex-direction: row-reverse;
+    }
+    .showcase-image {
+      flex-shrink: 0;
+    }
+    .showcase-image img {
+      width: 280px;
+      height: auto;
+      border-radius: 28px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+    }
+    .showcase-text {
+      flex: 1;
+    }
+    .showcase-text .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .showcase-text h2 {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .showcase-text p {
+      font-size: 16px;
+      color: var(--gray-500);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .showcase-text ul {
+      list-style: none;
+      padding: 0;
+    }
+    .showcase-text ul li {
+      font-size: 15px;
+      color: var(--gray-600);
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .showcase-text ul li::before {
+      content: "✓";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Features Grid */
+    .features { background: var(--gray-50); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid var(--gray-200);
+      transition: all 0.2s;
+    }
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 30px rgba(244, 63, 94, 0.08);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--gray-800);
+    }
+    .feature-card p {
+      font-size: 15px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--primary-light) 100%);
+    }
+    .cta .section-title { font-size: 40px; }
+    .cta .section-desc {
+      margin: 0 auto 40px;
+      max-width: 500px;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      padding: 48px 24px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .footer-brand .footer-logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .footer-brand p {
+      font-size: 14px;
+      color: var(--gray-500);
+      line-height: 1.7;
+    }
+    .footer-links h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 12px;
+    }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a {
+      font-size: 14px;
+      color: var(--gray-500);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 32px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p {
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+    .footer-bottom-links { display: flex; gap: 24px; }
+    .footer-bottom-links a {
+      font-size: 13px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-bottom-links a:hover { color: var(--gray-600); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 110px 20px 40px; }
+      .hero h1 { font-size: 32px; }
+      .hero > p { font-size: 16px; }
+      .hero-screenshots { gap: 12px; }
+      .hero-screenshots img { width: 160px; border-radius: 18px; }
+      .hero-screenshots img:nth-child(2),
+      .hero-screenshots img:nth-child(4) { margin-top: 20px; }
+      .showcase-inner,
+      .showcase-inner.reverse {
+        flex-direction: column;
+        gap: 32px;
+        text-align: center;
+      }
+      .showcase-image img { width: 240px; }
+      .showcase-text h2 { font-size: 26px; }
+      .showcase-text ul li { justify-content: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 28px; }
+      .cta .section-title { font-size: 28px; }
+      .footer-inner { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Babeat</a>
+      <ul class="nav-links">
+        <li><a href="#screenshots">Screenshots</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">Yonaha Lab</div>
+    <h1>이유식의 모든 것,<br><span>Babeat</span> 하나로</h1>
+    <p>큐브 재고 관리부터 주간 식단 계획까지.<br>바쁜 육아 속에서도 체계적인 이유식 관리를 도와드려요.</p>
+    <div class="hero-buttons">
+      <a href="#" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        App Store
+      </a>
+      <a href="#" class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.396 13l2.302-2.492zM5.864 2.658L16.8 9.99l-2.302 2.302L5.864 2.658z"/></svg>
+        Google Play
+      </a>
+    </div>
+
+    <!-- Hero Screenshots -->
+    <div class="hero-screenshots">
+      <img src="images/screenshot-home.png" alt="바비트 홈 화면 - 아기 정보와 큐브 현황, 오늘의 식단을 한눈에">
+      <img src="images/screenshot-intro.png" alt="바비트 소개 - 먹은 것, 먹일 것, 만들 것을 한번에 관리">
+      <img src="images/screenshot-meal-detail.png" alt="식단 상세 - 영양 균형과 큐브 구성 확인, 소진 완료 처리">
+      <img src="images/screenshot-add-cube.png" alt="큐브 추가 - 자동 카테고리 분류와 용량 설정">
+      <img src="images/screenshot-cube-manage.png" alt="큐브 관리 - 카테고리별 재고 현황과 사용 예정 추적">
+      <img src="images/screenshot-profile.png" alt="아기 프로필 - 아기 관리와 공동 양육자 연결">
+      <img src="images/screenshot-add-meal.png" alt="식단 추가 - 이전 식단 불러오기와 빠른 등록">
+    </div>
+  </section>
+
+  <!-- Screenshot Showcase Sections -->
+  <div id="screenshots">
+
+    <!-- Showcase 1: Home -->
+    <section class="showcase">
+      <div class="showcase-inner">
+        <div class="showcase-image">
+          <img src="images/screenshot-home.png" alt="바비트 홈 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: var(--primary-light); color: var(--primary);">Home</div>
+          <h2>식단과 재고를 하나로<br>간편한 이유식 관리</h2>
+          <p>홈 화면에서 아기의 D-day, 큐브 현황, 오늘의 식단을 한눈에 확인하세요.</p>
+          <ul>
+            <li>아기 프로필과 D-day 자동 계산</li>
+            <li>큐브 현황을 카테고리별로 한눈에 확인</li>
+            <li>주간 식단 타임라인과 캘린더 뷰</li>
+            <li>식사 시간과 사용 큐브를 빠르게 확인</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 2: Intro / Sharing -->
+    <section class="showcase">
+      <div class="showcase-inner reverse">
+        <div class="showcase-image">
+          <img src="images/screenshot-intro.png" alt="바비트 소개">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #EDE9FE; color: #7C3AED;">Share</div>
+          <h2>먹은 것, 먹일 것, 만들 것<br>한번에 정리하고 공유</h2>
+          <p>파트너와 초대 코드로 아기 정보를 공유하고, 함께 이유식을 관리하세요.</p>
+          <ul>
+            <li>초대 코드로 간편한 가족 공유</li>
+            <li>실시간 클라우드 동기화</li>
+            <li>여러 아기 프로필 관리 지원</li>
+            <li>어떤 기기에서든 동일한 데이터 접근</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 3: Meal Detail -->
+    <section class="showcase">
+      <div class="showcase-inner">
+        <div class="showcase-image">
+          <img src="images/screenshot-meal-detail.png" alt="식단 상세 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #D1FAE5; color: #065F46;">Meal Plan</div>
+          <h2>식단은 기록하고<br>재고는 자동 반영</h2>
+          <p>식단별 영양 균형을 확인하고, 소진 처리 한 번으로 재고가 자동 차감됩니다.</p>
+          <ul>
+            <li>탄수화물·단백질·비타민 영양 균형 시각화</li>
+            <li>포함된 큐브의 종류, 수량, 총량 표시</li>
+            <li>소진 완료 처리 시 재고 자동 차감</li>
+            <li>이전 식단 불러오기로 빠른 식단 구성</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 4: Add Cube -->
+    <section class="showcase">
+      <div class="showcase-inner reverse">
+        <div class="showcase-image">
+          <img src="images/screenshot-add-cube.png" alt="큐브 추가 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #FEF3C7; color: #92400E;">Add Cube</div>
+          <h2>자동 분류로 빠르고<br>간편한 큐브 등록</h2>
+          <p>이름만 입력하면 카테고리와 아이콘을 자동으로 감지해 빠르게 등록할 수 있어요.</p>
+          <ul>
+            <li>이름 입력 시 카테고리·아이콘 자동 감지</li>
+            <li>곡물, 고기, 채소 등 8가지 카테고리 분류</li>
+            <li>슬라이더로 큐브 용량 간편 설정</li>
+            <li>"만들기 전" 큐브로 미리 식단 계획 가능</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 5: Cube Management -->
+    <section class="showcase">
+      <div class="showcase-inner">
+        <div class="showcase-image">
+          <img src="images/screenshot-cube-manage.png" alt="큐브 관리 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #FEE2E2; color: #991B1B;">Inventory</div>
+          <h2>필요 수량 확인과 재고<br>상태 관리를 한번에</h2>
+          <p>카테고리별 재고 현황을 확인하고, 날짜별로 필요한 큐브 수량을 자동 계산합니다.</p>
+          <ul>
+            <li>카테고리별 큐브 목록과 재고 현황</li>
+            <li>사용 예정 수량 표시로 가용 재고 파악</li>
+            <li>날짜별 필요 큐브 계산 기능</li>
+            <li>소비기한 임박 큐브 경고 표시</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 6: Profile & Sharing -->
+    <section class="showcase">
+      <div class="showcase-inner reverse">
+        <div class="showcase-image">
+          <img src="images/screenshot-profile.png" alt="아기 프로필 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #FCE7F3; color: #BE185D;">Profile</div>
+          <h2>아기 관리와<br>공동 양육자 연결</h2>
+          <p>아기 프로필을 등록하고 D-day를 자동으로 추적하세요. 초대 코드로 파트너와 함께 관리할 수 있어요.</p>
+          <ul>
+            <li>아기 이름, 생년월일, 프로필 사진 등록</li>
+            <li>D-day 자동 계산 및 표시</li>
+            <li>초대 코드로 공동 양육자 연결</li>
+            <li>여러 아기 프로필 전환 지원</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase 7: Add Meal Plan -->
+    <section class="showcase">
+      <div class="showcase-inner">
+        <div class="showcase-image">
+          <img src="images/screenshot-add-meal.png" alt="식단 추가 화면">
+        </div>
+        <div class="showcase-text">
+          <div class="badge" style="background: #DBEAFE; color: #1E40AF;">Meal Plan</div>
+          <h2>이전 식단을 불러오고<br>빠르게 등록</h2>
+          <p>날짜와 시간을 선택하고, 이전 식단을 불러와 큐브를 빠르게 구성할 수 있어요.</p>
+          <ul>
+            <li>이전 식단 불러오기로 빠른 식단 구성</li>
+            <li>카테고리별 큐브 필터로 편리한 선택</li>
+            <li>가용 재고와 사용 예정 수량 실시간 확인</li>
+            <li>최근 식사 시간 자동 추천</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Features Grid -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-label">Features</div>
+      <div class="section-title">이유식 관리, 이렇게 쉬워져요</div>
+      <div class="section-desc">매일 반복되는 이유식 준비, 바비트가 체계적으로 정리해 드려요.</div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #FEF3C7;">🧊</div>
+          <h3>큐브 재고 관리</h3>
+          <p>곡물, 고기, 채소, 생선 등 카테고리별로 이유식 큐브를 등록하고 재고와 소비기한을 한눈에 확인하세요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #DBEAFE;">📅</div>
+          <h3>주간 식단 계획</h3>
+          <p>주간 캘린더에서 매일의 식단을 계획하고, 이전 식단을 불러와 빠르게 구성할 수 있어요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #D1FAE5;">📊</div>
+          <h3>가용 재고 추적</h3>
+          <p>식단에 배정된 큐브를 자동으로 계산해, 실제 사용 가능한 가용 재고를 정확히 알려드려요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #FEE2E2;">👶</div>
+          <h3>다중 아기 지원</h3>
+          <p>여러 아기의 이유식을 각각 관리하고, 아기별 프로필과 D-day를 추적하세요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #EDE9FE;">👨‍👩‍👧</div>
+          <h3>가족 공유</h3>
+          <p>초대 코드를 통해 파트너와 함께 아기의 이유식 정보를 실시간으로 공유하세요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #FCE7F3;">🔄</div>
+          <h3>실시간 동기화</h3>
+          <p>모든 데이터가 클라우드에 안전하게 저장되고, 여러 기기에서 실시간으로 동기화됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="section-inner">
+      <div class="section-title">지금 바로 시작하세요</div>
+      <div class="section-desc">바비트와 함께 체계적인 이유식 관리를 경험해 보세요.</div>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          App Store
+        </a>
+        <a href="#" class="btn btn-outline">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.396 13l2.302-2.492zM5.864 2.658L16.8 9.99l-2.302 2.302L5.864 2.658z"/></svg>
+          Google Play
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">Babeat</div>
+        <p>Yonaha Lab<br>
+        사업자 등록번호: 879-67-00694<br>
+        이메일: yonaha.lab@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">개인정보 처리방침</a></li>
+          <li><a href="terms.html">이용약관</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="mailto:yonaha.lab@gmail.com">이메일 문의</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Yonaha Lab. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
